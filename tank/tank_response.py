@@ -19,7 +19,7 @@ class TankResponse():
     """
     def __init__(self):
         # Set the openAI api key
-        openai.api_key = "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"
+        openai.api_key = "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"
         self.enabled = False
         self.prompt = [
             {"role": "system", "content": 

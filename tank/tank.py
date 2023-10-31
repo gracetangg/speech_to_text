@@ -1,13 +1,17 @@
 import struct
-import pyaudio
 import pvporcupine
+import datetime
 
 from threading import Thread
 from threading import Event
-from google.cloud import speech
+import pyaudio
 from six.moves import queue
+import openai
+import numpy as np
+import whisper
 
 import IPC
+# import textinputInterface # comes from the cpp library hopefully...
 
 # constants for KBD: 
 TEXTINPUT_START_MSG         = "TEXTINPUT_Start_MSG"
@@ -27,11 +31,11 @@ audio_stream = None
 
 access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
 
-class KEYBOARD_MESSAGE(IPC.IPCdata):
-    _fields = ("player", "buffer")
-    def __init__(self, player, buffer):
-        self.player = player
-        self.buffer = buffer
+# class KEYBOARD_MESSAGE(IPC.IPCdata):
+#     _fields = ("player", "buffer")
+#     def __init__(self, player, buffer):
+#         self.player = player
+#         self.buffer = buffer
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
@@ -39,7 +43,6 @@ class MicrophoneStream(object):
         self._rate = rate
         self._chunk = chunk
         self._audio_interface = audio_interface
-        # self._audio_stream = audio_stream
         self._audio_stream = self._audio_interface.open(
             format=pyaudio.paInt16,
             channels=1, 
@@ -77,9 +80,6 @@ class MicrophoneStream(object):
 
     def generator(self):
         while not self.closed:
-            # Use a blocking get() to ensure there's at least one chunk of
-            # data, and stop iteration if the chunk is None, indicating the
-            # end of the audio stream.
             chunk = self._buff.get()
             if chunk is None:
                 return
@@ -110,7 +110,6 @@ class QuitThread(Thread):
         return QuitThread(self.stopped, self.responses, self.stream)
 
     def revert_to_wakeword(self):
-        print("=======REVERT TO WAKEWORD=======")
         self.stream.exit()
     
     def is_alive(self): 
@@ -122,6 +121,7 @@ class QuitThread(Thread):
         self.quit_time = False
         while not self.stopped.wait(TIMEOUT):
             self.quit_time = True
+            print("=======REVERT TO WAKEWORD=======")
             self.revert_to_wakeword()
             break
 
@@ -132,10 +132,6 @@ class Tank():
     def __init__(self):
         self.language_code = 'en-US'  # a BCP-47 language tag
 
-        self.client = None
-        self.config = None
-        self.streaming_config = None
-
         self.porcupine = None
         self.sound = None
         self.audio_stream = None
@@ -145,67 +141,55 @@ class Tank():
         self.listening = False
 
     def enable(self):
-        self.client = speech.SpeechClient()
-        self.diarization_config = speech.SpeakerDiarizationConfig(
-            enable_speaker_diarization=True,
-            min_speaker_count=1,
-            max_speaker_count=10,
-            )
-        self.config = speech.RecognitionConfig(
-                        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-                        sample_rate_hertz=RATE,
-                        language_code=self.language_code,
-                        diarization_config=self.diarization_config
-                        )
-        self.streaming_config = speech.StreamingRecognitionConfig(
-                        config=self.config,
-                        interim_results=True
-                        )
+        self.audio_model = whisper.load_model("medium.en")
+        print("===================streaming from openai whisper========================")
         
-        # TODO make porcupine for hey TANK 
-        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_linux_v2_1_0.ppn'])
+        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
+        # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_linux_v2_1_0.ppn'])
 
         self.sound = pyaudio.PyAudio()
-        
-        self.audio_stream = self.sound.open(
-                            rate=self.porcupine.sample_rate, # RATE
-                            channels=1,
-                            format=pyaudio.paInt16,
-                            input=True,
-                            frames_per_buffer=self.porcupine.frame_length, #CHUNK
-                            )
+
+        self.audio_stream = sound.open(
+                        rate=porcupine.sample_rate, # RATE
+                        channels=1,
+                        format=pyaudio.paInt16,
+                        input=True,
+                        frames_per_buffer=porcupine.frame_length, #CHUNK
+                        )
 
         self.listening = False
-
         self.setup_IPC()
 
     def setup_IPC(self):
         """
-        Sets up and enables the IPC connection to central with task name: fake_kbd
+        Sets up and enables the IPC connection to central with task name: textInput
+        LEGACY: fake_kbd for victor
         """
-        # TODO figure out what to connect to
         print("IPC CONNECTING: TEXTINPUT...")
-        IPC.IPC_connect("fake_kbd")
+        IPC.IPC_connect("textInput")
 
-        print("IPC DEFINE MSG: TEXTINPUT_START_MSG")
-        IPC.IPC_defineMsg(TEXTINPUT_START_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
-        IPC.IPC_defineMsg(TEXTINPUT_TEXT_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
-        IPC.IPC_defineMsg(TEXTINPUT_KEYPRESS_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
-        IPC.IPC_defineMsg(TEXTINPUT_CLEAR_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
+        # shouldn't need to define any of the messages anymore
+        #  - should be handled by the interfaces functions
+        # print("IPC DEFINE MSG: TEXTINPUT_START_MSG")
+        # IPC.IPC_defineMsg(TEXTINPUT_START_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
+        # IPC.IPC_defineMsg(TEXTINPUT_TEXT_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
+        # IPC.IPC_defineMsg(TEXTINPUT_KEYPRESS_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
+        # IPC.IPC_defineMsg(TEXTINPUT_CLEAR_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_MESSAGE_FMT)
         
     def publish_start_transcription(self):
         """
         Publish a start string to indicate someone is speaking
         """
         print("HEY TANK!")
-        IPC.IPC_publishData(TEXTINPUT_START_MSG, "start")
+        # IPC.IPC_publishData(TEXTINPUT_START_MSG, "start")
+        TEXTINPUT_send_start()
 
     def publish_transcript(self, transcript):
         """
         Publish the transcript
         """
         print("PUBLISHING DATA")
-        IPC.IPC_publishData(TEXTINPUT_TEXT_MSG, transcript)
+        TEXTINPUT_send_input(transcript)
 
     def publish_keypress(self):
         """
@@ -217,9 +201,12 @@ class Tank():
         """
         Publish a message to indicate the person has left, clears the previous person's history
         """
-        # TODO determine what the clear message data is
+        # TODO determine what the clear message data is, create a function in chatGPT that clears the data
         print("CLEAR DATA HISTORY")
-        IPC.IPC_publishData(TEXTINPUT_CLEAR_MSG, "keypress")
+        # chatGPT.clearData()
+
+        # publishes something to indicate that the person has left 
+        TEXTINPUT_send_clear() # from the interfaces
 
     def terminate_IPC(self):
         """
@@ -240,43 +227,39 @@ class Tank():
             if keyword_index >= 0:
                 self.publish_start_transcription()
                 self.listening = True
+
+            if listening:
+                print('attempting to connect with transcribe')
+                audio_stream.stop_stream()
+                audio_stream.close()
+
+                stream = MicrophoneStream(RATE, CHUNK, audio_interface=sound)
+                stream.enter()
+                audio_generator = stream.generator()
+                responses = audio_generator
+
+                # Now, put the transcription responses to use.
+                stop_flag = Event()
+                stop_flag.clear()
+
+                quit_auto = QuitThread(stop_flag, responses, stream)
+                quit_auto.start()
                 
-            if not self.listening:
-                continue
+                print("printing listening")
+                self.listen_print_loop(responses, messages=messages, audio_model=audio_model, stop_flag=stop_flag, quit_auto=quit_auto)
+                print("finished listening")
+                print('exit transcription')
 
-            # attempt to connect with transcribe here:
-            self.audio_stream.stop_stream()
-            self.audio_stream.close()
-
-            stream = MicrophoneStream(RATE, CHUNK, audio_interface=self.sound)
-            stream.enter()
-            
-            audio_generator = stream.generator()
-            requests = (speech.StreamingRecognizeRequest(audio_content=content)
-                        for content in audio_generator)
-
-            responses = self.client.streaming_recognize(self.streaming_config, requests)
-
-            # Now, put the transcription responses to use.
-            stop_flag = Event()
-            stop_flag.clear()
-
-            quit_auto = QuitThread(stop_flag, responses, stream)
-            quit_auto.start()
-            
-            # print any words to transcribe
-            self.listen_print_loop(responses, stop_flag=stop_flag, quit_auto=quit_auto)
-
-            self.audio_stream = self.sound.open(
-                    rate=self.porcupine.sample_rate, # RATE
-                    channels=1,
-                    format=pyaudio.paInt16,
-                    input=True,
-                    frames_per_buffer=self.porcupine.frame_length, #CHUNK
-                    )
-
-            self.publish_clear_messages()
-            self.listening = False
+                self.audio_stream = sound.open(
+                        rate=porcupine.sample_rate, # RATE
+                        channels=1,
+                        format=pyaudio.paInt16,
+                        input=True,
+                        frames_per_buffer=porcupine.frame_length, #CHUNK
+                        )
+                
+                self.publish_clear_messages()
+                self.listening = False
 
     def terminate(self):
         self.terminate_IPC()
@@ -294,7 +277,7 @@ class Tank():
             self.sound = None
 
 
-    def listen_print_loop(self, responses, event=None, stop_flag=None, quit_auto=None):
+    def listen_print_loop(self, responses, messages=None, audio_model=None, event=None, stop_flag=None, quit_auto=None):
         """Iterates through server responses and prints them.
 
         The responses passed is a generator that will block until a response
@@ -310,52 +293,26 @@ class Tank():
         final one, print a newline to preserve the finalized transcription.
         """
         try:
-            num_chars_printed = 0
             for response in responses:
-                
-                if not stop_flag.isSet(): #if there is no stop flag then stop
+                if not stop_flag.is_set(): #if there is no stop flag then stop
                     stop_flag.set()
 
-                if not response.results: #if there are no results
-                    continue
-
-                # The `results` list is consecutive. For streaming, we only care about
-                # the first result being considered, since once it's `is_final`, it
-                # moves on to considering the next utterance.
-                result = response.results[0]
-                if not result.alternatives: #if there are no alternatives 
+                if not response: #if there are no results
                     continue
                     
                 # Display the transcription of the top alternative.
-                transcript = result.alternatives[0].transcript
-                wordlist = response.results[-1].alternatives[0].words
+                audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
+                result = audio_model.transcribe(audio_data, fp16=False, language='english')
+                transcript = result["text"]
 
-                # Display interim results, but with a carriage return at the end of the
-                # line, so subsequent lines will overwrite them.
-                #
-                # If the previous result was longer than this one, we need to print
-                # some extra spaces to overwrite the previous result
-                overwrite_chars = ' ' * (num_chars_printed - len(transcript))
+                print(transcript)
+                # ask_chatgpt(transcript, messages)
 
-                if not result.is_final:
-                    num_chars_printed = len(transcript)
-
-                else:
-                    print(transcript)
-                    player = 1
-                    self.publish_IPC(player, transcript)
-
-                    for word in wordlist: 
-                        word_speaker = f"{word.word} speaker: {word.speaker_tag}"
-                        print(word_speaker)
-                        self.publish_IPC(player, word_speaker)
-                    
-                    if stop_flag.isSet():
-                        stop_flag.clear()
-                        quit_auto.join()
-                        quit_auto = quit_auto.clone()
-                        quit_auto.start()
-                    num_chars_printed = 0
+                if stop_flag.is_set():
+                    stop_flag.clear()
+                    quit_auto.join()
+                    quit_auto = quit_auto.clone()
+                    quit_auto.start()
         except Exception as e:  
             print(f"caught exception {e}")
             return 
