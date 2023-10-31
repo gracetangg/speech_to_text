@@ -218,6 +218,7 @@ class Tank():
     def listen(self):
         print("connected...")
         while True:
+            self.publish_transcript("hello world")
             pcm = self.audio_stream.read(self.porcupine.frame_length)
             pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
 
