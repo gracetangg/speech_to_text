@@ -14,11 +14,14 @@ import IPC
 # import textinputInterface # comes from the cpp library hopefully...
 
 # constants for KBD: 
-TEXTINPUT_START_MSG         = "TEXTINPUT_Start_MSG"
-TEXTINPUT_TEXT_MSG          = "TEXTINPUT_Text_MSG"
-TEXTINPUT_KEYPRESS_MSG      = "TEXTINPUT_Keypress_MSG"
-TEXTINPUT_CLEAR_MSG         = "TEXTINPUT_Clear_MSG"
-TEXTINPUT_MESSAGE_FMT       = "string"
+TEXTINPUT_Start_MSG = "TEXTINPUT_Start_MSG"
+TEXTINPUT_Start_MSG_FMT = "string"
+TEXTINPUT_Keypress_MSG = "TEXTINPUT_Keypress_MSG"
+TEXTINPUT_Keypress_MSG_FMT = "string"
+TEXTINPUT_Text_MSG = "TEXTINPUT_Text_MSG"
+TEXTINPUT_Text_MSG_FMT = "string"
+TEXTINPUT_Clear_MSG = "TEXTINPUT_Clear_MSG"
+TEXTINPUT_Clear_MSG_FMT = "string"
 
 # Audio recording parameters
 RATE = 16000
@@ -30,12 +33,6 @@ sound = None
 audio_stream = None
 
 access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
-
-# class KEYBOARD_MESSAGE(IPC.IPCdata):
-#     _fields = ("player", "buffer")
-#     def __init__(self, player, buffer):
-#         self.player = player
-#         self.buffer = buffer
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
@@ -181,22 +178,23 @@ class Tank():
         Publish a start string to indicate someone is speaking
         """
         print("HEY TANK!")
-        # IPC.IPC_publishData(TEXTINPUT_START_MSG, "start")
-        TEXTINPUT_send_start()
+        IPC.IPC_publishData(TEXTINPUT_Start_MSG, "start")
+        # TEXTINPUT_send_start()
 
     def publish_transcript(self, transcript):
         """
         Publish the transcript
         """
         print("PUBLISHING DATA")
-        TEXTINPUT_send_input(transcript)
+        IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
+        # TEXTINPUT_send_input(transcript)
 
 
     def publish_keypress(self):
         """
         Publish a keypress value to indicate there is still someone present
         """
-        IPC.IPC_publishData(TEXTINPUT_KEYPRESS_MSG, "keypress")
+        IPC.IPC_publishData(TEXTINPUT_Keypress_MSG, "keypress")
 
     def publish_clear_messages(self):
         """
@@ -207,7 +205,8 @@ class Tank():
         # chatGPT.clearData()
 
         # publishes something to indicate that the person has left 
-        TEXTINPUT_send_clear() # from the interfaces
+        # TEXTINPUT_send_clear() # from the interfaces
+        IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
 
     def terminate_IPC(self):
         """
