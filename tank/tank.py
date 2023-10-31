@@ -218,7 +218,6 @@ class Tank():
     def listen(self):
         print("connected...")
         while True:
-            self.publish_transcript('hello world')
             pcm = self.audio_stream.read(self.porcupine.frame_length)
             pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
 
@@ -228,7 +227,7 @@ class Tank():
                 self.publish_start_transcription()
                 self.listening = True
 
-            if listening:
+            if self.listening:
                 print('attempting to connect with transcribe')
                 audio_stream.stop_stream()
                 audio_stream.close()
@@ -246,7 +245,7 @@ class Tank():
                 quit_auto.start()
                 
                 print("printing listening")
-                self.listen_print_loop(responses, messages=messages, audio_model=audio_model, stop_flag=stop_flag, quit_auto=quit_auto)
+                self.listen_print_loop(responses, messages=self.messages, audio_model=self.audio_model, stop_flag=stop_flag, quit_auto=quit_auto)
                 print("finished listening")
                 print('exit transcription')
 
