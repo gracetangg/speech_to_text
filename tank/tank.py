@@ -144,17 +144,17 @@ class Tank():
         self.audio_model = whisper.load_model("medium.en")
         print("===================streaming from openai whisper========================")
         
-        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
-        # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_linux_v2_1_0.ppn'])
+        # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
+        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_linux_v2_1_0.ppn'])
 
         self.sound = pyaudio.PyAudio()
 
-        self.audio_stream = sound.open(
-                        rate=porcupine.sample_rate, # RATE
+        self.audio_stream = self.sound.open(
+                        rate=self.porcupine.sample_rate, # RATE
                         channels=1,
                         format=pyaudio.paInt16,
                         input=True,
-                        frames_per_buffer=porcupine.frame_length, #CHUNK
+                        frames_per_buffer=self.porcupine.frame_length, #CHUNK
                         )
 
         self.listening = False
@@ -191,6 +191,7 @@ class Tank():
         print("PUBLISHING DATA")
         TEXTINPUT_send_input(transcript)
 
+
     def publish_keypress(self):
         """
         Publish a keypress value to indicate there is still someone present
@@ -218,7 +219,7 @@ class Tank():
     def listen(self):
         print("connected...")
         while True:
-            self.publish_IPC(1, 'hello world')
+            self.publish_transcript('hello world')
             pcm = self.audio_stream.read(self.porcupine.frame_length)
             pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
 
@@ -306,6 +307,7 @@ class Tank():
                 transcript = result["text"]
 
                 print(transcript)
+                self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
                 if stop_flag.is_set():
