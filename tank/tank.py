@@ -25,7 +25,7 @@ TEXTINPUT_Clear_MSG_FMT = "string"
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
-TIMEOUT = 20
+TIMEOUT = 120
 
 access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
 
@@ -302,7 +302,7 @@ class Tank():
         """
         try:
             for response in responses:
-                if not response: #if there are no results
+                if not response:
                     continue
                     
                 # Display the transcription of the top alternative.
@@ -325,12 +325,11 @@ class Tank():
                     language='english')
 
                 transcript = result["text"]
-                
-                if not stop_flag.is_set(): #if there is no stop flag then stop
-                    stop_flag.set()
-
                 if not result or not transcript: 
                     continue
+
+                if not stop_flag.is_set(): #if there is no stop flag then stop
+                    stop_flag.set()
 
                 print(transcript)
                 # self.publish_transcript(transcript)
