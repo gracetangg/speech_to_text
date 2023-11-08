@@ -325,12 +325,12 @@ class Tank():
                     language='english')
 
                 transcript = result["text"]
+                
+                if not stop_flag.is_set(): #if there is no stop flag then stop
+                    stop_flag.set()
 
                 if not result or not transcript: 
                     continue
-
-                if not stop_flag.is_set(): #if there is no stop flag then stop
-                    stop_flag.set()
 
                 print(transcript)
                 # self.publish_transcript(transcript)
