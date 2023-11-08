@@ -100,12 +100,12 @@ class MicrophoneStream(object):
                     data.append(chunk)
                 except queue.Empty:
                     break
-            print(b''.join(data))
-            audio_data = np.frombuffer(b''.join(data), dtype=np.int16).flatten().astype(np.float32) / 32768.0
-            # filtered_audio = self._apply_filter(audio_data.tobytes())
 
-            # yield filtered_audio.tobytes()
-            yield b''.join(data)
+            audio_data = np.frombuffer(b''.join(data), dtype=np.int16)
+            filtered_audio = self._apply_filter(audio_data.tobytes())
+
+            yield filtered_audio.tobytes()
+            # yield b''.join(data)
 
 class QuitThread(Thread):
     def __init__(self, event, responses, stream):
