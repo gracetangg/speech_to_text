@@ -134,7 +134,7 @@ class Tank():
         self.listening = False
 
     def enable(self):
-        self.audio_model = whisper.load_model("medium.en")
+        self.audio_model = whisper.load_model("small.en")
         print("===================streaming from openai whisper========================")
         
         # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
@@ -198,10 +198,6 @@ class Tank():
         """
         # TODO determine what the clear message data is, create a function in chatGPT that clears the data
         print("CLEAR DATA HISTORY")
-        # chatGPT.clearData()
-
-        # publishes something to indicate that the person has left 
-        # TEXTINPUT_send_clear() # from the interfaces
         IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
 
     def terminate_IPC(self):
