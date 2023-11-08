@@ -229,10 +229,10 @@ class Tank():
 
             if self.listening:
                 print('attempting to connect with transcribe')
-                audio_stream.stop_stream()
-                audio_stream.close()
+                self.audio_stream.stop_stream()
+                self.audio_stream.close()
 
-                stream = MicrophoneStream(RATE, CHUNK, audio_interface=sound)
+                stream = MicrophoneStream(RATE, CHUNK, audio_interface=self.sound)
                 stream.enter()
                 audio_generator = stream.generator()
                 responses = audio_generator
