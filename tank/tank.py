@@ -329,6 +329,9 @@ class Tank():
 
                 transcript = result["text"]
 
+                if not transcript: 
+                    continue
+
                 print(transcript)
                 # self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
