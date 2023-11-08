@@ -28,10 +28,6 @@ RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 TIMEOUT = 15
 
-porcupine = None
-sound = None
-audio_stream = None
-
 access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
 
 class MicrophoneStream(object):
@@ -249,12 +245,12 @@ class Tank():
                 print("finished listening")
                 print('exit transcription')
 
-                self.audio_stream = sound.open(
-                        rate=porcupine.sample_rate, # RATE
+                self.audio_stream = self.sound.open(
+                        rate=self.porcupine.sample_rate, # RATE
                         channels=1,
                         format=pyaudio.paInt16,
                         input=True,
-                        frames_per_buffer=porcupine.frame_length, #CHUNK
+                        frames_per_buffer=self.porcupine.frame_length, #CHUNK
                         )
                 
                 self.publish_clear_messages()
