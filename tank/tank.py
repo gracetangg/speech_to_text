@@ -180,7 +180,7 @@ class Tank():
 
         # shouldn't need to define any of the messages anymore
         #  - should be handled by the interfaces functions
-        # print("IPC DEFINE MSG: TEXTINPUT_START_MSG")
+        print("IPC DEFINE MSG: TEXTINPUT_START_MSG")
         IPC.IPC_defineMsg(TEXTINPUT_Start_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Start_MSG_FMT)
         IPC.IPC_defineMsg(TEXTINPUT_Text_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Text_MSG_FMT)
         IPC.IPC_defineMsg(TEXTINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Keypress_MSG_FMT)
