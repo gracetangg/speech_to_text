@@ -212,7 +212,7 @@ class Tank():
         """
         Disconnects task from central 
         """
-        print("DISCONNECTING fake_kbd...")
+        print("DISCONNECTING speech_input...")
         IPC.IPC_disconnect()
 
     def listen(self):
@@ -224,7 +224,7 @@ class Tank():
             keyword_index = self.porcupine.process(pcm)
             
             if keyword_index >= 0:
-                self.publish_start_transcription()
+                # self.publish_start_transcription()
                 self.listening = True
 
             if self.listening:
@@ -305,7 +305,7 @@ class Tank():
                 transcript = result["text"]
 
                 print(transcript)
-                self.publish_transcript(transcript)
+                # self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
                 if stop_flag.is_set():
