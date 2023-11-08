@@ -309,8 +309,8 @@ class Tank():
                     continue
                     
                 # Display the transcription of the top alternative.
-                audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float16) / 32768.0
-                result = audio_model.transcribe(audio_data, verbose=True, fp16=True, language='english')
+                audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
+                result = audio_model.transcribe(audio_data, verbose=True, fp16=False, language='english')
 
                 transcript = result["text"]
 
