@@ -103,8 +103,8 @@ class MicrophoneStream(object):
 
             # audio_data = np.frombuffer(b''.join(data), dtype=np.int16).flatten().astype(np.float32) / 32768.0
             # filtered_audio = self._apply_filter(audio_data)
-
             # yield filtered_audio.tobytes()
+
             yield b''.join(data)
 
 class QuitThread(Thread):
@@ -285,7 +285,7 @@ class Tank():
             self.sound = None
 
 
-    def listen_print_loop(self, responses, messages=None, audio_model=None, event=None, stop_flag=None, quit_auto=None):
+    def listen_print_loop(self, responses, audio_model=None, stop_flag=None, quit_auto=None):
         """Iterates through server responses and prints them.
 
         The responses passed is a generator that will block until a response
@@ -329,18 +329,19 @@ class Tank():
 
                 transcript = result["text"]
 
-                if not transcript: 
+                if not result or not transcript: 
                     continue
 
                 print(transcript)
                 # self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
-                if stop_flag.is_set():
-                    stop_flag.clear()
-                    quit_auto.join()
-                    quit_auto = quit_auto.clone()
-                    quit_auto.start()
+                # if stop_flag.is_set():
+                #     stop_flag.clear()
+                #     quit_auto.join()
+                #     quit_auto = quit_auto.clone()
+                #     quit_auto.start()
+
         except Exception as e:  
             print(f"caught exception {e}")
             return 
