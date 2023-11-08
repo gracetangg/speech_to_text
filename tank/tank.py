@@ -101,8 +101,8 @@ class MicrophoneStream(object):
                 except queue.Empty:
                     break
 
-            audio_data = np.frombuffer(b''.join(data), dtype=np.int16)
-            filtered_audio = self._apply_filter(audio_data.tobytes())
+            audio_data = np.frombuffer(b''.join(data), dtype=np.int16).flatten().astype(np.float32) / 32768.0
+            filtered_audio = self._apply_filter(audio_data)
 
             yield filtered_audio.tobytes()
             # yield b''.join(data)
