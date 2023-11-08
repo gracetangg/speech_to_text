@@ -233,7 +233,7 @@ class Tank():
             keyword_index = self.porcupine.process(pcm)
             
             if keyword_index >= 0:
-                # self.publish_start_transcription()
+                self.publish_start_transcription()
                 self.listening = True
 
             if self.listening:
@@ -266,7 +266,7 @@ class Tank():
                         frames_per_buffer=self.porcupine.frame_length, #CHUNK
                         )
                 
-                # self.publish_clear_messages()
+                self.publish_clear_messages()
                 self.listening = False
 
     def terminate(self):
@@ -332,7 +332,7 @@ class Tank():
                     stop_flag.set()
 
                 print(transcript)
-                # self.publish_transcript(transcript)
+                self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
                 if stop_flag.is_set():
