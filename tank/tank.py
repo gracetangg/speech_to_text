@@ -25,7 +25,7 @@ TEXTINPUT_Clear_MSG_FMT = "string"
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
-TIMEOUT = 15
+TIMEOUT = 20
 
 access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
 
@@ -266,7 +266,7 @@ class Tank():
                         frames_per_buffer=self.porcupine.frame_length, #CHUNK
                         )
                 
-                self.publish_clear_messages()
+                # self.publish_clear_messages()
                 self.listening = False
 
     def terminate(self):
