@@ -45,8 +45,8 @@ class MicrophoneStream(object):
         )
 
         # Filter parameters
-        self._filter_cutoff = 1000  # Adjust this value as needed
-        self._filter_order = 6  # Adjust this value as needed
+        self._filter_cutoff = 500 
+        self._filter_order = 3 
 
         # Create a low-pass filter
         nyquist = 0.5 * self._rate
@@ -101,11 +101,11 @@ class MicrophoneStream(object):
                 except queue.Empty:
                     break
 
-            audio_data = np.frombuffer(b''.join(data), dtype=np.int16).flatten().astype(np.float32) / 32768.0
-            filtered_audio = self._apply_filter(audio_data)
+            # audio_data = np.frombuffer(b''.join(data), dtype=np.int16).flatten().astype(np.float32) / 32768.0
+            # filtered_audio = self._apply_filter(audio_data)
 
-            yield filtered_audio.tobytes()
-            # yield b''.join(data)
+            # yield filtered_audio.tobytes()
+            yield b''.join(data)
 
 class QuitThread(Thread):
     def __init__(self, event, responses, stream):
@@ -309,9 +309,9 @@ class Tank():
                     continue
                     
                 # Display the transcription of the top alternative.
-                audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
-                # audio_data = response
-                result = audio_model.transcribe(audio_data, fp16=False, language='english')
+                audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float16) / 32768.0
+                result = audio_model.transcribe(audio_data, verbose=True, fp16=True, language='english')
+
                 transcript = result["text"]
 
                 print(transcript)
