@@ -1,13 +1,12 @@
 import struct
 import pvporcupine
-import datetime
 
 from threading import Thread
 from threading import Event
-import pyaudio
 from six.moves import queue
-import openai
+from scipy import signal 
 import numpy as np
+import pyaudio
 import whisper
 
 import IPC
@@ -45,6 +44,15 @@ class MicrophoneStream(object):
             stream_callback=self._fill_buffer,
         )
 
+        # Filter parameters
+        self._filter_cutoff = 1000  # Adjust this value as needed
+        self._filter_order = 6  # Adjust this value as needed
+
+        # Create a low-pass filter
+        nyquist = 0.5 * self._rate
+        normal_cutoff = self._filter_cutoff / nyquist
+        self._b, self._a = signal.butter(self._filter_order, normal_cutoff, btype='low', analog=False)
+
         # Create a thread-safe buffer of audio data
         self._buff = queue.Queue()
         self.closed = True
@@ -70,6 +78,11 @@ class MicrophoneStream(object):
         """Continuously collect data from the audio stream, into the buffer."""
         self._buff.put(in_data)
         return in_data, pyaudio.paContinue
+    
+    def _apply_filter(self, audio_data):
+        # Apply the filter to the audio data
+        filtered_data = signal.lfilter(self._b, self._a, audio_data)
+        return filtered_data
 
     def generator(self):
         while not self.closed:
@@ -88,7 +101,11 @@ class MicrophoneStream(object):
                 except queue.Empty:
                     break
 
-            yield b''.join(data)
+            audio_data = np.frombuffer(b''.join(data), dtype=np.int16).flatten().astype(np.float32) / 32768.0
+            filtered_audio = self._apply_filter(audio_data.tobytes())
+
+            yield filtered_audio.tobytes()
+            # yield b''.join(data)
 
 class QuitThread(Thread):
     def __init__(self, event, responses, stream):
@@ -134,7 +151,7 @@ class Tank():
         self.listening = False
 
     def enable(self):
-        self.audio_model = whisper.load_model("small.en")
+        self.audio_model = whisper.load_model("medium.en")
         print("===================streaming from openai whisper========================")
         
         # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
@@ -292,7 +309,8 @@ class Tank():
                     continue
                     
                 # Display the transcription of the top alternative.
-                audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
+                # audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
+                audio_data = response
                 result = audio_model.transcribe(audio_data, fp16=False, language='english')
                 transcript = result["text"]
 
