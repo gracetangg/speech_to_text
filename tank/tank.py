@@ -25,7 +25,7 @@ TEXTINPUT_Clear_MSG_FMT = "string"
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
-TIMEOUT = 120
+TIMEOUT = 60
 
 access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
 
@@ -310,7 +310,7 @@ class Tank():
                 audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
                 result = audio_model.transcribe(
                     audio_data, 
-                    verbose=True, 
+                    # verbose=False, 
                     temperature=0,
                     task='transcribe',
                     best_of=None,
