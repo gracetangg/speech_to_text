@@ -9,6 +9,8 @@ import numpy as np
 import pyaudio
 import whisper
 
+import faster_whisper
+
 import IPC
 # import textinputInterface # comes from the cpp library hopefully...
 
@@ -151,7 +153,8 @@ class Tank():
         self.listening = False
 
     def enable(self):
-        self.audio_model = whisper.load_model("medium.en")
+        # self.audio_model = whisper.load_model("medium.en")
+        self.audio_model = faster_whipser.WhisperModel("large-v2", device="cpu", compute_type="int8")
         print("===================streaming from openai whisper========================")
         
         # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
@@ -308,22 +311,23 @@ class Tank():
                     
                 # Display the transcription of the top alternative.
                 audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
-                result = audio_model.transcribe(
-                    audio_data, 
-                    # verbose=False, 
-                    temperature=0,
-                    task='transcribe',
-                    best_of=None,
-                    beam_size=None,
-                    patience=None,
-                    length_penalty=None,
-                    suppress_tokens="-1",
-                    condition_on_previous_text=False,
-                    compression_ratio_threshold=2.4,
-                    logprob_threshold=-0.5,
-                    no_speech_threshold=0.2,
-                    fp16=False, 
-                    language='english')
+                # result = audio_model.transcribe(
+                #     audio_data, 
+                #     # verbose=False, 
+                #     temperature=0,
+                #     task='transcribe',
+                #     best_of=None,
+                #     beam_size=None,
+                #     patience=None,
+                #     length_penalty=None,
+                #     suppress_tokens="-1",
+                #     condition_on_previous_text=False,
+                #     compression_ratio_threshold=2.4,
+                #     logprob_threshold=-0.5,
+                #     no_speech_threshold=0.2,
+                #     fp16=False, 
+                #     language='english')
+                result = audio_model.transcribe(audio_data, beam=5)
 
                 transcript = result["text"]
                 if not result or not transcript: 
