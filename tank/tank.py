@@ -193,10 +193,10 @@ class Tank():
         # shouldn't need to define any of the messages anymore
         #  - should be handled by the interfaces functions
         print("IPC DEFINE MSG: SPEECHINPUT_START_MSG")
-        # IPC.IPC_defineMsg(TEXTINPUT_Start_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Start_MSG_FMT)
-        # IPC.IPC_defineMsg(TEXTINPUT_Text_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Text_MSG_FMT)
-        # IPC.IPC_defineMsg(TEXTINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Keypress_MSG_FMT)
-        # IPC.IPC_defineMsg(TEXTINPUT_Clear_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Clear_MSG_FMT)
+        IPC.IPC_defineMsg(TEXTINPUT_Start_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Start_MSG_FMT)
+        IPC.IPC_defineMsg(TEXTINPUT_Text_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Text_MSG_FMT)
+        IPC.IPC_defineMsg(TEXTINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Keypress_MSG_FMT)
+        IPC.IPC_defineMsg(TEXTINPUT_Clear_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Clear_MSG_FMT)
 
         IPC.IPC_defineMsg(SPEECHINPUT_Start_MSG,    IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Start_MSG_FMT)
         IPC.IPC_defineMsg(SPEECHINPUT_Text_MSG,     IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Text_MSG_FMT)
@@ -208,24 +208,24 @@ class Tank():
         Publish a start string to indicate someone is speaking
         """
         print("HEY TANK!")
-        # IPC.IPC_publishData(TEXTINPUT_Start_MSG, "start")
-        IPC.IPC_publishData(SPEECHINPUT_Start_MSG, "start")
+        IPC.IPC_publishData(TEXTINPUT_Start_MSG, "start")
+        # IPC.IPC_publishData(SPEECHINPUT_Start_MSG, "start")
 
     def publish_transcript(self, transcript):
         """
         Publish the transcript
         """
         print("PUBLISHING DATA")
-        # IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
-        IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
+        IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
+        # IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
 
 
     def publish_keypress(self):
         """
         Publish a keypress value to indicate there is still someone present
         """
-        # IPC.IPC_publishData(TEXTINPUT_Keypress_MSG, "keypress")
-        IPC.IPC_publishData(SPEECHINPUT_Keypress_MSG, "keypress")
+        IPC.IPC_publishData(TEXTINPUT_Keypress_MSG, "keypress")
+        # IPC.IPC_publishData(SPEECHINPUT_Keypress_MSG, "keypress")
 
     def publish_clear_messages(self):
         """
@@ -233,8 +233,8 @@ class Tank():
         """
         # TODO determine what the clear message data is, create a function in chatGPT that clears the data
         print("CLEAR DATA HISTORY")
-        # IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
-        IPC.IPC_publishData(SPEECHINPUT_Clear_MSG, "");
+        IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
+        # IPC.IPC_publishData(SPEECHINPUT_Clear_MSG, "");
 
     def terminate_IPC(self):
         """
