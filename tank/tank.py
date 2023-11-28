@@ -327,26 +327,39 @@ class Tank():
                     
                 # Display the transcription of the top alternative.
                 audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
-                result = audio_model.transcribe(
-                    audio_data, 
-                    # verbose=False, 
-                    temperature=0,
-                    # task='transcribe',
-                    best_of=None,
-                    beam_size=None,
-                    patience=None,
-                    length_penalty=None,
-                    suppress_tokens="-1",
+                
+                # result = audio_model.transcribe(
+                #     audio_data, 
+                #     verbose=False, 
+                #     temperature=0,
+                #     task='transcribe',
+                #     best_of=None,
+                #     beam_size=None,
+                #     patience=None,
+                #     length_penalty=None,
+                #     suppress_tokens="-1",
+                #     condition_on_previous_text=False,
+                #     compression_ratio_threshold=2.4,
+                #     log_prob_threshold=-0.5,
+                #     no_speech_threshold=0.2,
+                #     fp16=False, 
+                #     language='english')
+                # transcript = result["text"]
+
+                result, _ = audio_model.transcribe(
+                    audio=audio_data, 
+                    temperature=0.0,
+                    best_of=1,
+                    beam_size=1,
+                    patience=1,
+                    length_penalty=1,
                     condition_on_previous_text=False,
                     compression_ratio_threshold=2.4,
                     log_prob_threshold=-0.5,
                     no_speech_threshold=0.2)
-                    # fp16=False, 
-                    # language='english')
-                result = list(result)
-                print(result)
-                # transcript = result["text"]
-                transcript = "\n".join([seg.text for seg in result])
+                transcript = "\n".join([seg.text for seg in list(result)])
+
+                
                 if not result or not transcript: 
                     continue
 
