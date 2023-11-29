@@ -130,7 +130,7 @@ class QuitThread(Thread):
         self.quit_time = False
         self.stream = stream
 
-        IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
+        # IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
 
     def clone(self):
         return QuitThread(self.stopped, self.responses, self.stream)
@@ -153,11 +153,11 @@ class QuitThread(Thread):
         return True
 
     def run(self):
-        self.quit_time = False
-        while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
-            IPC.IPC_listen(250)
-        print("=======REVERT TO WAKEWORD=======")
-        self.revert_to_wakeword()
+        # self.quit_time = False
+        # while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
+        #     IPC.IPC_listen(250)
+        # print("=======REVERT TO WAKEWORD=======")
+        # self.revert_to_wakeword()
         
         # self.quit_time = False
         # self.stopped.wait()
@@ -165,12 +165,12 @@ class QuitThread(Thread):
         # print("=======REVERT TO WAKEWORD=======")
         # self.revert_to_wakeword()
 
-        # self.quit_time = False
-        # while not self.stopped.wait(TIMEOUT):
-        #     self.quit_time = True
-        #     print("=======REVERT TO WAKEWORD=======")
-        #     self.revert_to_wakeword()
-        #     break
+        self.quit_time = False
+        while not self.stopped.wait(TIMEOUT):
+            self.quit_time = True
+            print("=======REVERT TO WAKEWORD=======")
+            self.revert_to_wakeword()
+            break
 
     def join(self):
         Thread.join(self)
@@ -290,8 +290,7 @@ class Tank():
 
                 stream = MicrophoneStream(RATE, CHUNK, audio_interface=self.sound)
                 stream.enter()
-                audio_generator = stream.generator()
-                responses = audio_generator
+                responses = stream.generator()
 
                 # Now, put the transcription responses to use.
                 stop_flag = Event()
@@ -391,18 +390,18 @@ class Tank():
                 if not result or not transcript: 
                     continue
 
-                # if not stop_flag.is_set(): #if there is no stop flag then stop
-                #     stop_flag.set()
+                if not stop_flag.is_set(): #if there is no stop flag then stop
+                    stop_flag.set()
 
                 print(transcript)
                 self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
-                # if stop_flag.is_set():
-                #     stop_flag.clear()
-                #     quit_auto.join()
-                #     quit_auto = quit_auto.clone()
-                #     quit_auto.start()
+                if stop_flag.is_set():
+                    stop_flag.clear()
+                    quit_auto.join()
+                    quit_auto = quit_auto.clone()
+                    quit_auto.start()
 
         except Exception as e:  
             print(f"caught exception {e}")
