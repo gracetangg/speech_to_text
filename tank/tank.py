@@ -7,6 +7,7 @@ from six.moves import queue
 from scipy import signal 
 import numpy as np
 import pyaudio
+import time
 import whisper
 
 import faster_whisper
@@ -153,19 +154,19 @@ class QuitThread(Thread):
 
     def run(self):
         # while (not self.stopped.is_set()): 
-        while (not self.stop):
-            pass
-        print("=======REVERT TO WAKEWORD=======")
-        self.revert_to_wakeword()
+        # while (not self.stop):
+        #     pass
+        # print("=======REVERT TO WAKEWORD=======")
+        # self.revert_to_wakeword()
         
         # self.stopped.wait()
         # print("=======REVERT TO WAKEWORD=======")
         # self.revert_to_wakeword()
 
-        # while not self.stopped.wait(TIMEOUT):
-        #     print("=======REVERT TO WAKEWORD=======")
-        #     self.revert_to_wakeword()
-        #     break
+        while not self.stopped.wait(TIMEOUT):
+            print("=======REVERT TO WAKEWORD=======")
+            self.revert_to_wakeword()
+            break
 
     def join(self):
         Thread.join(self)
@@ -366,7 +367,7 @@ class Tank():
                 #     fp16=False, 
                 #     language='english')
                 # transcript = result["text"]
-
+                t = time.time()
                 result, _ = audio_model.transcribe(
                     audio=audio_data, 
                     temperature=0.0,
@@ -379,22 +380,22 @@ class Tank():
                     log_prob_threshold=-0.25,
                     no_speech_threshold=0.2)
                 transcript = "\n".join([seg.text for seg in list(result)])
-
+                print("processing time", time.time() - t)
                 if not result or not transcript: 
                     continue
 
-                # if not stop_flag.is_set(): #if there is no stop flag then stop
-                #     stop_flag.set()
+                if not stop_flag.is_set(): #if there is no stop flag then stop
+                    stop_flag.set()
 
                 print(transcript)
                 self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
-                # if stop_flag.is_set():
-                #     stop_flag.clear()
-                #     quit_auto.join()
-                #     quit_auto = quit_auto.clone()
-                #     quit_auto.start()
+                if stop_flag.is_set():
+                    stop_flag.clear()
+                    quit_auto.join()
+                    quit_auto = quit_auto.clone()
+                    quit_auto.start()
 
         except Exception as e:  
             print(f"caught exception {e}")
