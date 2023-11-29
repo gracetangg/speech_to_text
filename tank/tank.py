@@ -375,7 +375,7 @@ class Tank():
                     length_penalty=1,
                     condition_on_previous_text=False,
                     compression_ratio_threshold=2.4,
-                    log_prob_threshold=-0.5,
+                    log_prob_threshold=-0.25,
                     no_speech_threshold=0.2)
                 transcript = "\n".join([seg.text for seg in list(result)])
 
