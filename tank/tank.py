@@ -142,7 +142,6 @@ class QuitThread(Thread):
             self.stopped.set()
 
     def revert_to_wakeword(self):
-        print("HERE")
         self.stream.exit()
     
     def is_alive(self): 
@@ -293,7 +292,7 @@ class Tank():
                 quit_auto.start()
                 
                 print("printing listening")
-                self.listen_print_loop(responses, audio_model=self.audio_model, stop_flag=None, quit_auto=None)
+                self.listen_print_loop(responses, audio_model=self.audio_model, stop_flag=stop_flag, quit_auto=quit_auto)
                 print("finished listening")
                 print('exit transcription')
 
