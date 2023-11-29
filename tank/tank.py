@@ -184,8 +184,8 @@ class Tank():
         self.listening = False
 
     def enable(self):
-        # self.audio_model = whisper.load_model("medium.en")
-        self.audio_model = faster_whisper.WhisperModel("medium.en", device="cpu", compute_type="int8")
+        self.audio_model = whisper.load_model("medium.en")
+        # self.audio_model = faster_whisper.WhisperModel("medium.en", device="cpu", compute_type="int8")
         print("===================streaming from openai whisper========================")
         
         # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
@@ -350,37 +350,41 @@ class Tank():
                 # Display the transcription of the top alternative.
                 audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
 
-                # result = audio_model.transcribe(
-                #     audio_data, 
-                #     verbose=False, 
-                #     temperature=0,
-                #     task='transcribe',
-                #     best_of=None,
-                #     beam_size=None,
-                #     patience=None,
-                #     length_penalty=None,
-                #     suppress_tokens="-1",
-                #     condition_on_previous_text=False,
-                #     compression_ratio_threshold=2.4,
-                #     log_prob_threshold=-0.5,
-                #     no_speech_threshold=0.2,
-                #     fp16=False, 
-                #     language='english')
-                # transcript = result["text"]
                 t = time.time()
-                result, _ = audio_model.transcribe(
-                    audio=audio_data, 
-                    temperature=0.0,
-                    best_of=0,
-                    beam_size=1,
-                    patience=1,
-                    length_penalty=1,
+                result = audio_model.transcribe(
+                    audio_data, 
+                    verbose=False, 
+                    temperature=0,
+                    task='transcribe',
+                    best_of=None,
+                    beam_size=None,
+                    patience=None,
+                    length_penalty=None,
+                    suppress_tokens="-1",
                     condition_on_previous_text=False,
                     compression_ratio_threshold=2.4,
-                    log_prob_threshold=-0.25,
-                    no_speech_threshold=0.2)
-                transcript = "\n".join([seg.text for seg in list(result)])
+                    log_prob_threshold=-0.5,
+                    no_speech_threshold=0.2,
+                    fp16=False, 
+                    language='english')
+                transcript = result["text"]
                 print("processing time", time.time() - t)
+
+                # t = time.time()
+                # result, _ = audio_model.transcribe(
+                #     audio=audio_data, 
+                #     temperature=0.0,
+                #     best_of=0,
+                #     beam_size=1,
+                #     patience=1,
+                #     length_penalty=1,
+                #     condition_on_previous_text=False,
+                #     compression_ratio_threshold=2.4,
+                #     log_prob_threshold=-0.25,
+                #     no_speech_threshold=0.2)
+                # transcript = "\n".join([seg.text for seg in list(result)])
+                # print("processing time", time.time() - t)
+                
                 if not result or not transcript: 
                     continue
 
