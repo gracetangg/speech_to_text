@@ -130,8 +130,8 @@ class QuitThread(Thread):
 
         IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
 
-    # def clone(self):
-    #     return QuitThread(self.stopped, self.responses, self.stream)
+    def clone(self):
+        return QuitThread(self.stopped, self.stream)
     
     def process_signal(self, msg_ref, call_data, client_data):
         # SendSignal
@@ -151,19 +151,20 @@ class QuitThread(Thread):
         return True
 
     def run(self):
-        while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
-            IPC.IPC_listen(250)
-        print("=======REVERT TO WAKEWORD=======")
-        self.revert_to_wakeword()
+        # while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
+        #     print("LISTENING...")
+        #     IPC.IPC_listen(250)
+        # print("=======REVERT TO WAKEWORD=======")
+        # self.revert_to_wakeword()
         
         # self.stopped.wait()
         # print("=======REVERT TO WAKEWORD=======")
         # self.revert_to_wakeword()
-
-        # while not self.stopped.wait(TIMEOUT):
-        #     print("=======REVERT TO WAKEWORD=======")
-        #     self.revert_to_wakeword()
-        #     break
+        print("BEFORE")
+        while not self.stopped.wait(TIMEOUT):
+            print("=======REVERT TO WAKEWORD=======")
+            self.revert_to_wakeword()
+            break
 
     def join(self):
         Thread.join(self)
@@ -378,21 +379,21 @@ class Tank():
                     no_speech_threshold=0.2)
                 transcript = "\n".join([seg.text for seg in list(result)])
 
-                # if not result or not transcript: 
-                #     continue
+                if not result or not transcript: 
+                    continue
 
-                # if not stop_flag.is_set(): #if there is no stop flag then stop
-                #     stop_flag.set()
+                if not stop_flag.is_set(): #if there is no stop flag then stop
+                    stop_flag.set()
 
                 print(transcript)
                 self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
-                # if stop_flag.is_set():
-                #     stop_flag.clear()
-                #     quit_auto.join()
-                #     quit_auto = quit_auto.clone()
-                #     quit_auto.start()
+                if stop_flag.is_set():
+                    stop_flag.clear()
+                    quit_auto.join()
+                    quit_auto = quit_auto.clone()
+                    quit_auto.start()
 
         except Exception as e:  
             print(f"caught exception {e}")
