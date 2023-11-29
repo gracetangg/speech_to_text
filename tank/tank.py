@@ -363,7 +363,7 @@ class Tank():
                     suppress_tokens="-1",
                     condition_on_previous_text=False,
                     compression_ratio_threshold=2.4,
-                    log_prob_threshold=-0.5,
+                    # log_prob_threshold=-0.5,
                     no_speech_threshold=0.2,
                     fp16=False, 
                     language='english')
@@ -384,7 +384,7 @@ class Tank():
                 #     no_speech_threshold=0.2)
                 # transcript = "\n".join([seg.text for seg in list(result)])
                 # print("processing time", time.time() - t)
-                
+
                 if not result or not transcript: 
                     continue
 
