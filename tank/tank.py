@@ -33,6 +33,9 @@ SPEECHINPUT_Text_MSG_FMT = "string"
 SPEECHINPUT_Clear_MSG = "SPEECHINPUT_Clear_MSG"
 SPEECHINPUT_Clear_MSG_FMT = "string"
 
+SEND_SIGNAL_MSG = "SendSignal"
+SEND_SIGNAL_MSG_FMT = "string"
+
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
@@ -127,8 +130,18 @@ class QuitThread(Thread):
         self.quit_time = False
         self.stream = stream
 
+        IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
+
     def clone(self):
         return QuitThread(self.stopped, self.responses, self.stream)
+    
+    def process_signal(self, msg_ref, call_data, client_data):
+        # SendSignal
+        # HEAD_send_signal("interaction:aborted");
+        # HEAD_send_signal("interaction:end");
+        if call_data == "interaction:aborted" or call_data == "interaction:end": 
+            # self.revert_to_wakeword()
+            self.stopped.set()
 
     def revert_to_wakeword(self):
         self.stream.exit()
@@ -140,11 +153,23 @@ class QuitThread(Thread):
 
     def run(self):
         self.quit_time = False
-        while not self.stopped.wait(TIMEOUT):
-            self.quit_time = True
-            print("=======REVERT TO WAKEWORD=======")
-            self.revert_to_wakeword()
-            break
+        while (self.enabled and IPC.IPC_isConnected() and not self.stopped.is_set()): 
+            IPC.IPC_listen(250)
+        print("=======REVERT TO WAKEWORD=======")
+        self.revert_to_wakeword()
+        
+        # self.quit_time = False
+        # self.stopped.wait()
+        # self.quit_time = True
+        # print("=======REVERT TO WAKEWORD=======")
+        # self.revert_to_wakeword()
+
+        # self.quit_time = False
+        # while not self.stopped.wait(TIMEOUT):
+        #     self.quit_time = True
+        #     print("=======REVERT TO WAKEWORD=======")
+        #     self.revert_to_wakeword()
+        #     break
 
     def join(self):
         Thread.join(self)
@@ -202,6 +227,7 @@ class Tank():
         IPC.IPC_defineMsg(SPEECHINPUT_Text_MSG,     IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Text_MSG_FMT)
         IPC.IPC_defineMsg(SPEECHINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Keypress_MSG_FMT)
         IPC.IPC_defineMsg(SPEECHINPUT_Clear_MSG,    IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Clear_MSG_FMT)
+        IPC.IPC_defineMsg(SEND_SIGNAL_MSG,          IPC.IPC_VARIABLE_LENGTH, SEND_SIGNAL_MSG_FMT)
         
     def publish_start_transcription(self):
         """
@@ -327,7 +353,7 @@ class Tank():
                     
                 # Display the transcription of the top alternative.
                 audio_data = np.frombuffer(response, np.int16).flatten().astype(np.float32) / 32768.0
-                
+
                 # result = audio_model.transcribe(
                 #     audio_data, 
                 #     verbose=False, 
@@ -363,18 +389,18 @@ class Tank():
                 if not result or not transcript: 
                     continue
 
-                if not stop_flag.is_set(): #if there is no stop flag then stop
-                    stop_flag.set()
+                # if not stop_flag.is_set(): #if there is no stop flag then stop
+                #     stop_flag.set()
 
                 print(transcript)
                 self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
-                if stop_flag.is_set():
-                    stop_flag.clear()
-                    quit_auto.join()
-                    quit_auto = quit_auto.clone()
-                    quit_auto.start()
+                # if stop_flag.is_set():
+                #     stop_flag.clear()
+                #     quit_auto.join()
+                #     quit_auto = quit_auto.clone()
+                #     quit_auto.start()
 
         except Exception as e:  
             print(f"caught exception {e}")
