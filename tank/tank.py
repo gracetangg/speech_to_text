@@ -58,16 +58,7 @@ class MicrophoneStream(object):
             frames_per_buffer=self._chunk,
             stream_callback=self._fill_buffer,
         )
-
-        # Filter parameters
-        self._filter_cutoff = 500 
-        self._filter_order = 3 
-
-        # Create a low-pass filter
-        nyquist = 0.5 * self._rate
-        normal_cutoff = self._filter_cutoff / nyquist
-        self._b, self._a = signal.butter(self._filter_order, normal_cutoff, btype='low', analog=False)
-
+        
         # Create a thread-safe buffer of audio data
         self._buff = queue.Queue()
         self.closed = True
@@ -115,10 +106,6 @@ class MicrophoneStream(object):
                     data.append(chunk)
                 except queue.Empty:
                     break
-
-            # audio_data = np.frombuffer(b''.join(data), dtype=np.int16).flatten().astype(np.float32) / 32768.0
-            # filtered_audio = self._apply_filter(audio_data)
-            # yield filtered_audio.tobytes()
 
             yield b''.join(data)
 
