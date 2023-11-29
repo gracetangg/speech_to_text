@@ -154,7 +154,6 @@ class QuitThread(Thread):
     def run(self):
         while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
             IPC.IPC_listen(250)
-        
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
         
@@ -295,7 +294,7 @@ class Tank():
                 quit_auto.start()
                 
                 print("printing listening")
-                self.listen_print_loop(responses, audio_model=self.audio_model, stop_flag=stop_flag, quit_auto=quit_auto)
+                self.listen_print_loop(responses, audio_model=self.audio_model, stop_flag=None, quit_auto=None)
                 print("finished listening")
                 print('exit transcription')
 
