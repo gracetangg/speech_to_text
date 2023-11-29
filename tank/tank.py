@@ -122,17 +122,16 @@ class MicrophoneStream(object):
             yield b''.join(data)
 
 class QuitThread(Thread):
-    def __init__(self, event, responses, stream):
+    def __init__(self, event, stream):
         Thread.__init__(self)
         self.stopped = event
-        self.responses = responses
         self.exc = None
         self.stream = stream
 
         IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
 
-    def clone(self):
-        return QuitThread(self.stopped, self.responses, self.stream)
+    # def clone(self):
+    #     return QuitThread(self.stopped, self.responses, self.stream)
     
     def process_signal(self, msg_ref, call_data, client_data):
         # SendSignal
@@ -161,10 +160,10 @@ class QuitThread(Thread):
         # print("=======REVERT TO WAKEWORD=======")
         # self.revert_to_wakeword()
 
-        while not self.stopped.wait(TIMEOUT):
-            print("=======REVERT TO WAKEWORD=======")
-            self.revert_to_wakeword()
-            break
+        # while not self.stopped.wait(TIMEOUT):
+        #     print("=======REVERT TO WAKEWORD=======")
+        #     self.revert_to_wakeword()
+        #     break
 
     def join(self):
         Thread.join(self)
@@ -266,7 +265,6 @@ class Tank():
 
     def listen(self):
         print("connected...")
-        self.publish_transcript("Hello world!")
         while True:
             pcm = self.audio_stream.read(self.porcupine.frame_length)
             pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
@@ -290,7 +288,7 @@ class Tank():
                 stop_flag = Event()
                 stop_flag.clear()
 
-                quit_auto = QuitThread(stop_flag, responses, stream)
+                quit_auto = QuitThread(stop_flag, stream)
                 quit_auto.start()
                 
                 print("printing listening")
