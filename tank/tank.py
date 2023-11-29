@@ -379,8 +379,8 @@ class Tank():
                     no_speech_threshold=0.2)
                 transcript = "\n".join([seg.text for seg in list(result)])
 
-                # if not result or not transcript: 
-                #     continue
+                if not result or not transcript: 
+                    continue
 
                 # if not stop_flag.is_set(): #if there is no stop flag then stop
                 #     stop_flag.set()
