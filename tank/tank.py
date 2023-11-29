@@ -369,7 +369,7 @@ class Tank():
                 result, _ = audio_model.transcribe(
                     audio=audio_data, 
                     temperature=0.0,
-                    best_of=1,
+                    best_of=0,
                     beam_size=1,
                     patience=1,
                     length_penalty=1,
