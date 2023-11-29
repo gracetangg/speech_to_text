@@ -150,11 +150,10 @@ class QuitThread(Thread):
         return True
 
     def run(self):
-        # while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
-        #     print("LISTENING...")
-        #     IPC.IPC_listen(250)
-        while not self.stopped.is_set():
-            pass
+        while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
+            print("LISTENING...")
+            # IPC.IPC_listen(250)
+            IPC.IPC_listen(IPC.IPC_WAIT_FOREVER)
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
         
@@ -380,21 +379,21 @@ class Tank():
                     no_speech_threshold=0.2)
                 transcript = "\n".join([seg.text for seg in list(result)])
 
-                if not result or not transcript: 
-                    continue
+                # if not result or not transcript: 
+                #     continue
 
-                if not stop_flag.is_set(): #if there is no stop flag then stop
-                    stop_flag.set()
+                # if not stop_flag.is_set(): #if there is no stop flag then stop
+                #     stop_flag.set()
 
                 print(transcript)
                 self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
-                if stop_flag.is_set():
-                    stop_flag.clear()
-                    quit_auto.join()
-                    quit_auto = quit_auto.clone()
-                    quit_auto.start()
+                # if stop_flag.is_set():
+                #     stop_flag.clear()
+                #     quit_auto.join()
+                #     quit_auto = quit_auto.clone()
+                #     quit_auto.start()
 
         except Exception as e:  
             print(f"caught exception {e}")
