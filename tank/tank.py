@@ -141,6 +141,7 @@ class QuitThread(Thread):
         # HEAD_send_signal("interaction:end");
         if call_data == "interaction:aborted" or call_data == "interaction:end": 
             # self.revert_to_wakeword()
+            print("SET STOPPED")
             self.stopped.set()
 
     def revert_to_wakeword(self):
@@ -348,6 +349,7 @@ class Tank():
         """
         try:
             for response in responses:
+                print("RESPONSE")
                 if not response:
                     continue
                     
