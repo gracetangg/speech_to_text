@@ -42,7 +42,8 @@ RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 TIMEOUT = 60
 
-access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
+# access_key = "YmjdiYjeRf9LwFBJCFxf299XxeiDoMRITiAjyvHcvc/RlOI1JLCwZA==" 
+access_key = "PCT/y2SUaPddqQDVOrv8ZH46wZ12RIT4ljYVwruxaad8w1m+znja3Q=="
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
@@ -176,7 +177,7 @@ class Tank():
         print("===================streaming from openai whisper========================")
         
         # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
-        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_linux_v2_1_0.ppn'])
+        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-tank_en_linux_v2_1_0.ppn'])
 
         self.sound = pyaudio.PyAudio()
 
