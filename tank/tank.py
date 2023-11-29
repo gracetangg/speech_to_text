@@ -58,7 +58,7 @@ class MicrophoneStream(object):
             frames_per_buffer=self._chunk,
             stream_callback=self._fill_buffer,
         )
-        
+
         # Create a thread-safe buffer of audio data
         self._buff = queue.Queue()
         self.closed = True
@@ -395,8 +395,10 @@ class Tank():
             pass
 
 def main(): 
+    t = time.time()
     tank_listening = Tank()
     tank_listening.enable()
+    print(time.time() - t)
 
     try: 
         tank_listening.listen()
