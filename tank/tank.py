@@ -127,7 +127,6 @@ class QuitThread(Thread):
         self.stopped = event
         self.responses = responses
         self.exc = None
-        self.quit_time = False
         self.stream = stream
 
         IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
@@ -140,11 +139,11 @@ class QuitThread(Thread):
         # HEAD_send_signal("interaction:aborted");
         # HEAD_send_signal("interaction:end");
         if call_data == "interaction:aborted" or call_data == "interaction:end": 
-            # self.revert_to_wakeword()
             print("SET STOPPED")
             self.stopped.set()
 
     def revert_to_wakeword(self):
+        print("HERE")
         self.stream.exit()
     
     def is_alive(self): 
@@ -153,23 +152,17 @@ class QuitThread(Thread):
         return True
 
     def run(self):
-        self.quit_time = False
         while (IPC.IPC_isConnected() and not self.stopped.is_set()): 
             IPC.IPC_listen(250)
         
         print("=======REVERT TO WAKEWORD=======")
-        self.quit_time = True
         self.revert_to_wakeword()
         
-        # self.quit_time = False
         # self.stopped.wait()
-        # self.quit_time = True
         # print("=======REVERT TO WAKEWORD=======")
         # self.revert_to_wakeword()
 
-        self.quit_time = False
         while not self.stopped.wait(TIMEOUT):
-            self.quit_time = True
             print("=======REVERT TO WAKEWORD=======")
             self.revert_to_wakeword()
             break
@@ -388,9 +381,8 @@ class Tank():
                     no_speech_threshold=0.2)
                 transcript = "\n".join([seg.text for seg in list(result)])
 
-                
-                if not result or not transcript: 
-                    continue
+                # if not result or not transcript: 
+                #     continue
 
                 # if not stop_flag.is_set(): #if there is no stop flag then stop
                 #     stop_flag.set()
