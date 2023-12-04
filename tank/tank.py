@@ -128,7 +128,6 @@ class QuitThread(Thread):
         # HEAD_send_signal("interaction:aborted");
         # HEAD_send_signal("interaction:end");
         if call_data == "interaction:aborted" or call_data == "interaction:end": 
-            print("SET STOPPED")
             # self.stopped.set()
             self.stop = True
 
@@ -141,20 +140,20 @@ class QuitThread(Thread):
         return True
 
     def run(self):
-        # while (not self.stopped.is_set()): 
-        # while (not self.stop):
-        #     pass
-        # print("=======REVERT TO WAKEWORD=======")
-        # self.revert_to_wakeword()
+        while (not self.stop):
+            IPC.IPC_Listen(0)
+            time.sleep(0.25)
+        print("=======REVERT TO WAKEWORD=======")
+        self.revert_to_wakeword()
         
         # self.stopped.wait()
         # print("=======REVERT TO WAKEWORD=======")
         # self.revert_to_wakeword()
 
-        while not self.stopped.wait(TIMEOUT):
-            print("=======REVERT TO WAKEWORD=======")
-            self.revert_to_wakeword()
-            break
+        # while not self.stopped.wait(TIMEOUT):
+        #     print("=======REVERT TO WAKEWORD=======")
+        #     self.revert_to_wakeword()
+        #     break
 
     def join(self):
         Thread.join(self)
