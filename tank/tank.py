@@ -127,7 +127,7 @@ class QuitThread(Thread):
         # SendSignal
         # HEAD_send_signal("interaction:aborted");
         # HEAD_send_signal("interaction:end");
-        if call_data == "interaction:aborted" or call_data == "interaction:end": 
+        if call_data in ["interaction:aborted", "interaction:end", "interaction:ignore"]: 
             # self.stopped.set()
             self.stop = True
 
@@ -140,6 +140,7 @@ class QuitThread(Thread):
         return True
 
     def run(self):
+        # while(not self.stopped.is_set()):
         while (not self.stop):
             IPC.IPC_listen(0)
             time.sleep(0.25)
@@ -202,10 +203,10 @@ class Tank():
         # shouldn't need to define any of the messages anymore
         #  - should be handled by the interfaces functions
         print("IPC DEFINE MSG: SPEECHINPUT_START_MSG")
-        IPC.IPC_defineMsg(TEXTINPUT_Start_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Start_MSG_FMT)
-        IPC.IPC_defineMsg(TEXTINPUT_Text_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Text_MSG_FMT)
-        IPC.IPC_defineMsg(TEXTINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Keypress_MSG_FMT)
-        IPC.IPC_defineMsg(TEXTINPUT_Clear_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Clear_MSG_FMT)
+        # IPC.IPC_defineMsg(TEXTINPUT_Start_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Start_MSG_FMT)
+        # IPC.IPC_defineMsg(TEXTINPUT_Text_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Text_MSG_FMT)
+        # IPC.IPC_defineMsg(TEXTINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Keypress_MSG_FMT)
+        # IPC.IPC_defineMsg(TEXTINPUT_Clear_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Clear_MSG_FMT)
 
         IPC.IPC_defineMsg(SPEECHINPUT_Start_MSG,    IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Start_MSG_FMT)
         IPC.IPC_defineMsg(SPEECHINPUT_Text_MSG,     IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Text_MSG_FMT)
