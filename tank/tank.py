@@ -176,7 +176,7 @@ class Tank():
         print("===================streaming from openai whisper========================")
         
         # self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-victor_en_mac_v2_1_0.ppn'])
-        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-tank_en_linux_v2_1_0.ppn'])
+        self.porcupine = pvporcupine.create(access_key=access_key, keyword_paths=['./hey-tank_en_linux_v3_0_0.ppn'])
 
         self.sound = pyaudio.PyAudio()
 
