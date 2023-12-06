@@ -303,7 +303,6 @@ class Tank():
                 
                 self.publish_clear_messages()
                 self.listening = False
-                quit_auto.join()
 
     def terminate(self):
         self.terminate_IPC()
