@@ -139,18 +139,18 @@ class QuitThread(Thread):
         # HEAD_send_signal("interaction:aborted");
         # HEAD_send_signal("interaction:end");
         if call_data in ["interaction:aborted", "interaction:end"]: 
-            print("INTERACT STOPPED")
             self.stop = True
+            print("=======REVERT TO WAKEWORD=======")
+            self.revert_to_wakeword()
 
     def revert_to_wakeword(self):
-        self.stream.exit()
+        if self.stream:
+            self.stream.exit()
 
     def run(self):
-        while (IPC.IPC_isConnected() and not self.stop):
+        while (IPC.IPC_isConnected()):
             IPC.IPC_listen(250)
             time.sleep(0.01)
-        print("=======REVERT TO WAKEWORD=======")
-        self.revert_to_wakeword()
         
         # self.stopped.wait()
         # print("=======REVERT TO WAKEWORD=======")
@@ -260,6 +260,7 @@ class Tank():
         IPC.IPC_disconnect()
 
     def listen(self):
+        quit_auto = QuitThread()
         while True:
             pcm = self.audio_stream.read(self.porcupine.frame_length)
             pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
@@ -283,7 +284,8 @@ class Tank():
                 stop_flag = Event()
                 stop_flag.clear()
 
-                quit_auto = QuitThread(stop_flag, stream)
+                # quit_auto = QuitThread(stop_flag, stream)
+                quit_auto.reset(stop_flag, stream)
                 quit_auto.start()
                 
                 print("printing listening")
