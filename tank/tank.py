@@ -151,7 +151,7 @@ class QuitThread(Thread):
     def run(self):
         # while(not self.stopped.is_set()):
         while (IPC.IPC_isConnected() and not self.stop):
-            IPC.IPC_listen(0)
+            IPC.IPC_listen(1)
             time.sleep(0.25)
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
@@ -266,7 +266,7 @@ class Tank():
 
     def listen(self):
         print("connected...")
-        quit_auto = QuitThread()
+        # quit_auto = QuitThread()
         while True:
             pcm = self.audio_stream.read(self.porcupine.frame_length)
             pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
@@ -290,7 +290,7 @@ class Tank():
                 stop_flag = Event()
                 stop_flag.clear()
 
-                # quit_auto = QuitThread(stop_flag, stream)
+                quit_auto = QuitThread(stop_flag, stream)
                 quit_auto.reset(stop_flag, stream)
                 quit_auto.start()
                 
