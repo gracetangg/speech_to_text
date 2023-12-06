@@ -118,7 +118,7 @@ class QuitThread(Thread):
         self.stream = stream
         self.stop = False
 
-        IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
+        IPC.IPC_subscribe("SendSignal", self.process_signal, None)
 
     def clone(self):
         return QuitThread(self.stopped, self.stream)
