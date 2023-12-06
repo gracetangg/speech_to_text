@@ -391,11 +391,11 @@ class Tank():
                 self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
-                if stop_flag.is_set():
-                    stop_flag.clear()
-                    quit_auto.join()
-                    quit_auto = quit_auto.clone()
-                    quit_auto.start()
+                # if stop_flag.is_set():
+                #     stop_flag.clear()
+                #     quit_auto.join()
+                #     quit_auto = quit_auto.clone()
+                #     quit_auto.start()
 
         except Exception as e:  
             print(f"caught exception {e}")
