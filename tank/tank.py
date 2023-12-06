@@ -286,7 +286,7 @@ class Tank():
 
                 # quit_auto = QuitThread(stop_flag, stream)
                 quit_auto.reset(stop_flag, stream)
-                quit_auto.start()
+                # quit_auto.start()
                 
                 print("printing listening")
                 self.listen_print_loop(responses, audio_model=self.audio_model, stop_flag=stop_flag, quit_auto=quit_auto)
