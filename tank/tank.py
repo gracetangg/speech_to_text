@@ -221,23 +221,23 @@ class Tank():
         Publish a start string to indicate someone is speaking
         """
         print("HEY TANK!")
-        # IPC.IPC_publishData(TEXTINPUT_Start_MSG, "start")
-        IPC.IPC_publishData(SPEECHINPUT_Start_MSG, "start")
+        IPC.IPC_publishData(TEXTINPUT_Start_MSG, "start")
+        # IPC.IPC_publishData(SPEECHINPUT_Start_MSG, "start")
 
     def publish_transcript(self, transcript):
         """
         Publish the transcript
         """
         print("PUBLISHING DATA")
-        # IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
-        IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
+        IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
+        # IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
 
     def publish_keypress(self):
         """
         Publish a keypress value to indicate there is still someone present
         """
-        # IPC.IPC_publishData(TEXTINPUT_Keypress_MSG, "keypress")
-        IPC.IPC_publishData(SPEECHINPUT_Keypress_MSG, "keypress")
+        IPC.IPC_publishData(TEXTINPUT_Keypress_MSG, "keypress")
+        # IPC.IPC_publishData(SPEECHINPUT_Keypress_MSG, "keypress")
 
     def publish_clear_messages(self):
         """
@@ -245,8 +245,8 @@ class Tank():
         """
         # TODO determine what the clear message data is, create a function in chatGPT that clears the data
         print("CLEAR DATA HISTORY")
-        # IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
-        IPC.IPC_publishData(SPEECHINPUT_Clear_MSG, "");
+        IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
+        # IPC.IPC_publishData(SPEECHINPUT_Clear_MSG, "");
 
     def terminate_IPC(self):
         """
