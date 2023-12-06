@@ -130,7 +130,6 @@ class QuitThread(Thread):
     def reset(self, event, stream): 
         self.stopped = event
         self.stream = stream
-        self.stop = False
 
         # IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
     
@@ -139,7 +138,6 @@ class QuitThread(Thread):
         # HEAD_send_signal("interaction:aborted");
         # HEAD_send_signal("interaction:end");
         if call_data in ["interaction:aborted", "interaction:end"]: 
-            self.stop = True
             print("=======REVERT TO WAKEWORD=======")
             self.revert_to_wakeword()
 
