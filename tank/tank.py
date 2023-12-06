@@ -151,8 +151,8 @@ class QuitThread(Thread):
     def run(self):
         # while(not self.stopped.is_set()):
         while (IPC.IPC_isConnected() and not self.stop):
-            IPC.IPC_listen(100)
-            # time.sleep(0.1)
+            IPC.IPC_listen(10)
+            time.sleep(0.01)
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
         
