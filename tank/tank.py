@@ -95,7 +95,6 @@ class MicrophoneStream(object):
         while not self.closed:
             chunk = self._buff.get(block=False)
             if chunk is None:
-                time.sleep(0.01)
                 continue
             data = [chunk]
 
@@ -144,7 +143,7 @@ class QuitThread(Thread):
 
     def run(self):
         while (IPC.IPC_isConnected() and not self.stop):
-            IPC.IPC_listen(100)
+            IPC.IPC_listen(1000)
             time.sleep(0.01)
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
