@@ -125,7 +125,6 @@ class QuitThread(Thread):
 
     def reset(self, event, stream): 
         self.stopped = event
-        self.exc = None
         self.stream = stream
         self.stop = False
 
@@ -135,21 +134,14 @@ class QuitThread(Thread):
         # SendSignal
         # HEAD_send_signal("interaction:aborted");
         # HEAD_send_signal("interaction:end");
-        if str(call_data) in ["interaction:aborted", "interaction:end", "interaction:ignore"]: 
-            # self.stopped.set()
+        if call_data in ["interaction:aborted", "interaction:end"]: 
             print("INTERACT STOPPED")
             self.stop = True
 
     def revert_to_wakeword(self):
         self.stream.exit()
-    
-    def is_alive(self): 
-        if self.exc: 
-            raise self.exc
-        return True
 
     def run(self):
-        # while(not self.stopped.is_set()):
         while (IPC.IPC_isConnected() and not self.stop):
             IPC.IPC_listen(10)
             time.sleep(0.01)
@@ -229,24 +221,24 @@ class Tank():
         Publish a start string to indicate someone is speaking
         """
         print("HEY TANK!")
-        IPC.IPC_publishData(TEXTINPUT_Start_MSG, "start")
-        # IPC.IPC_publishData(SPEECHINPUT_Start_MSG, "start")
+        # IPC.IPC_publishData(TEXTINPUT_Start_MSG, "start")
+        IPC.IPC_publishData(SPEECHINPUT_Start_MSG, "start")
 
     def publish_transcript(self, transcript):
         """
         Publish the transcript
         """
         print("PUBLISHING DATA")
-        IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
-        # IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
+        # IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
+        IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
 
 
     def publish_keypress(self):
         """
         Publish a keypress value to indicate there is still someone present
         """
-        IPC.IPC_publishData(TEXTINPUT_Keypress_MSG, "keypress")
-        # IPC.IPC_publishData(SPEECHINPUT_Keypress_MSG, "keypress")
+        # IPC.IPC_publishData(TEXTINPUT_Keypress_MSG, "keypress")
+        IPC.IPC_publishData(SPEECHINPUT_Keypress_MSG, "keypress")
 
     def publish_clear_messages(self):
         """
@@ -254,8 +246,8 @@ class Tank():
         """
         # TODO determine what the clear message data is, create a function in chatGPT that clears the data
         print("CLEAR DATA HISTORY")
-        IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
-        # IPC.IPC_publishData(SPEECHINPUT_Clear_MSG, "");
+        # IPC.IPC_publishData(TEXTINPUT_Clear_MSG, "");
+        IPC.IPC_publishData(SPEECHINPUT_Clear_MSG, "");
 
     def terminate_IPC(self):
         """
