@@ -198,6 +198,7 @@ class Tank():
         LEGACY: fake_kbd for victor
         """
         print("IPC CONNECTING: TEXTINPUT...")
+        IPC.IPC_initialize()
         IPC.IPC_connect("textInput")
 
         # shouldn't need to define any of the messages anymore
