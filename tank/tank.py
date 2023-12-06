@@ -257,7 +257,6 @@ class Tank():
         IPC.IPC_disconnect()
 
     def listen(self):
-        print("connected...")
         # quit_auto = QuitThread()
         while True:
             pcm = self.audio_stream.read(self.porcupine.frame_length)
