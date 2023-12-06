@@ -99,7 +99,7 @@ class MicrophoneStream(object):
                 continue
             
             if chunk is None:
-                continue
+                return
             data = [chunk]
 
             # Now consume whatever other data's still buffered.
@@ -147,7 +147,7 @@ class QuitThread(Thread):
 
     def run(self):
         while (IPC.IPC_isConnected() and not self.stop):
-            IPC.IPC_listen(100)
+            IPC.IPC_listen(250)
             time.sleep(0.01)
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
@@ -204,7 +204,7 @@ class Tank():
         """
         print("IPC CONNECTING: TEXTINPUT...")
         IPC.IPC_initialize()
-        IPC.IPC_connect("SpeechInput")
+        IPC.IPC_connect("speechInput")
 
         # shouldn't need to define any of the messages anymore
         #  - should be handled by the interfaces functions
