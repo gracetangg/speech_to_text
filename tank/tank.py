@@ -232,7 +232,6 @@ class Tank():
         # IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
         IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
 
-
     def publish_keypress(self):
         """
         Publish a keypress value to indicate there is still someone present
@@ -378,6 +377,7 @@ class Tank():
                     stop_flag.set()
 
                 print(transcript)
+                self.publish_keypress()
                 self.publish_transcript(transcript)
                 # ask_chatgpt(transcript, messages)
 
