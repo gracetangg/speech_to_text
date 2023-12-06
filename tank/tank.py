@@ -93,7 +93,12 @@ class MicrophoneStream(object):
 
     def generator(self):
         while not self.closed:
-            chunk = self._buff.get()
+            # chunk = self._buff.get()
+            try:
+                chunk = self._buff.get_nowait()
+            except queue.Empty:
+                continue
+            
             if chunk is None:
                 return
             data = [chunk]
