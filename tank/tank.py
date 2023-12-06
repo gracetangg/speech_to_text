@@ -111,24 +111,33 @@ class MicrophoneStream(object):
             yield b''.join(data)
 
 class QuitThread(Thread):
-    def __init__(self, event, stream):
+    def __init__(self, event=None, stream=None):
         Thread.__init__(self)
         self.stopped = event
         self.exc = None
         self.stream = stream
         self.stop = False
 
-        IPC.IPC_subscribe("SendSignal", self.process_signal, None)
+        IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
 
     def clone(self):
         return QuitThread(self.stopped, self.stream)
+
+    def reset(self, event, stream): 
+        self.stopped = event
+        self.exc = None
+        self.stream = stream
+        self.stop = False
+
+        IPC.IPC_subscribeData("SendSignal", self.process_signal, None)
     
     def process_signal(self, msg_ref, call_data, client_data):
         # SendSignal
         # HEAD_send_signal("interaction:aborted");
         # HEAD_send_signal("interaction:end");
-        if call_data in ["interaction:aborted", "interaction:end", "interaction:ignore"]: 
+        if str(call_data) in ["interaction:aborted", "interaction:end", "interaction:ignore"]: 
             # self.stopped.set()
+            print("INTERACT STOPPED")
             self.stop = True
 
     def revert_to_wakeword(self):
@@ -257,6 +266,7 @@ class Tank():
 
     def listen(self):
         print("connected...")
+        quit_auto = QuitThread()
         while True:
             pcm = self.audio_stream.read(self.porcupine.frame_length)
             pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
@@ -280,7 +290,8 @@ class Tank():
                 stop_flag = Event()
                 stop_flag.clear()
 
-                quit_auto = QuitThread(stop_flag, stream)
+                # quit_auto = QuitThread(stop_flag, stream)
+                quit_auto.reset(stop_flag, stream)
                 quit_auto.start()
                 
                 print("printing listening")
@@ -332,6 +343,7 @@ class Tank():
         """
         try:
             for response in responses:
+                print("RESPONSE")
                 if not response:
                     continue
                     
