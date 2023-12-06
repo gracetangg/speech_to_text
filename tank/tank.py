@@ -151,8 +151,8 @@ class QuitThread(Thread):
     def run(self):
         # while(not self.stopped.is_set()):
         while (IPC.IPC_isConnected() and not self.stop):
-            IPC.IPC_listen(1)
-            time.sleep(0.1)
+            IPC.IPC_listen(100)
+            # time.sleep(0.1)
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
         
@@ -208,7 +208,7 @@ class Tank():
         """
         print("IPC CONNECTING: TEXTINPUT...")
         IPC.IPC_initialize()
-        IPC.IPC_connect("textInput")
+        IPC.IPC_connect("SpeechInput")
 
         # shouldn't need to define any of the messages anymore
         #  - should be handled by the interfaces functions
@@ -343,7 +343,6 @@ class Tank():
         """
         try:
             for response in responses:
-                print("RESPONSE")
                 if not response:
                     continue
                     
