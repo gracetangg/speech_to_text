@@ -95,7 +95,7 @@ class MicrophoneStream(object):
         while not self.closed:
             chunk = self._buff.get(block=False)
             if chunk is None:
-                return
+                continue
             data = [chunk]
 
             # Now consume whatever other data's still buffered.
