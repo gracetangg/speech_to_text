@@ -144,7 +144,7 @@ class QuitThread(Thread):
     def run(self):
         while (IPC.IPC_isConnected() and not self.stop):
             IPC.IPC_listen(100)
-            time.sleep(0.001)
+            time.sleep(0.01)
         print("=======REVERT TO WAKEWORD=======")
         self.revert_to_wakeword()
         
@@ -210,11 +210,11 @@ class Tank():
         IPC.IPC_defineMsg(TEXTINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Keypress_MSG_FMT)
         IPC.IPC_defineMsg(TEXTINPUT_Clear_MSG, IPC.IPC_VARIABLE_LENGTH, TEXTINPUT_Clear_MSG_FMT)
 
-        IPC.IPC_defineMsg(SPEECHINPUT_Start_MSG,    IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Start_MSG_FMT)
-        IPC.IPC_defineMsg(SPEECHINPUT_Text_MSG,     IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Text_MSG_FMT)
+        IPC.IPC_defineMsg(SPEECHINPUT_Start_MSG, IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Start_MSG_FMT)
+        IPC.IPC_defineMsg(SPEECHINPUT_Text_MSG, IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Text_MSG_FMT)
         IPC.IPC_defineMsg(SPEECHINPUT_Keypress_MSG, IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Keypress_MSG_FMT)
-        IPC.IPC_defineMsg(SPEECHINPUT_Clear_MSG,    IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Clear_MSG_FMT)
-        IPC.IPC_defineMsg(SEND_SIGNAL_MSG,          IPC.IPC_VARIABLE_LENGTH, SEND_SIGNAL_MSG_FMT)
+        IPC.IPC_defineMsg(SPEECHINPUT_Clear_MSG, IPC.IPC_VARIABLE_LENGTH, SPEECHINPUT_Clear_MSG_FMT)
+        IPC.IPC_defineMsg(SEND_SIGNAL_MSG, IPC.IPC_VARIABLE_LENGTH, SEND_SIGNAL_MSG_FMT)
         
     def publish_start_transcription(self):
         """
