@@ -147,7 +147,7 @@ class QuitThread(Thread):
 
     def run(self):
         while (IPC.IPC_isConnected()):
-            IPC.IPC_listen(100)
+            IPC.IPC_listen(250)
             time.sleep(0.01)
         
         # self.stopped.wait()
@@ -232,7 +232,7 @@ class Tank():
         """
         print("PUBLISHING DATA")
         # IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
-        IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
+        IPC.IPC_publishData("SPEECHINPUT_Text_MSG", transcript)
 
     def publish_keypress(self):
         """
