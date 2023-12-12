@@ -231,8 +231,8 @@ class Tank():
         Publish the transcript
         """
         print("PUBLISHING DATA")
-        IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
-        IPC.IPC_publishData("SPEECHINPUT_Text_MSG", transcript)
+        # IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
+        IPC.IPC_publishData(SPEECHINPUT_Text_MSG, transcript)
 
     def publish_keypress(self):
         """
