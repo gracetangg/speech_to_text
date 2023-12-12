@@ -200,7 +200,7 @@ class Tank():
         Sets up and enables the IPC connection to central with task name: textInput
         LEGACY: fake_kbd for victor
         """
-        print("IPC CONNECTING: TEXTINPUT...")
+        print("IPC CONNECTING: SPEECHINPUT...")
         IPC.IPC_initialize()
         IPC.IPC_connect("speechInput")
 
@@ -231,7 +231,7 @@ class Tank():
         Publish the transcript
         """
         print("PUBLISHING DATA")
-        # IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
+        IPC.IPC_publishData(TEXTINPUT_Text_MSG, transcript)
         IPC.IPC_publishData("SPEECHINPUT_Text_MSG", transcript)
 
     def publish_keypress(self):
