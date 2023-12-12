@@ -147,7 +147,7 @@ class QuitThread(Thread):
 
     def run(self):
         while (IPC.IPC_isConnected()):
-            IPC.IPC_listen(250)
+            IPC.IPC_listen(100)
             time.sleep(0.01)
         
         # self.stopped.wait()
