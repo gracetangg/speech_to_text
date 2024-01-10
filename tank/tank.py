@@ -11,9 +11,7 @@ import time
 import whisper
 
 import faster_whisper
-
 import IPC
-# import textinputInterface # comes from the cpp library hopefully...
 
 # constants for TEXTINPUT: 
 TEXTINPUT_Start_MSG = "TEXTINPUT_Start_MSG"
@@ -47,7 +45,7 @@ access_key = "PCT/y2SUaPddqQDVOrv8ZH46wZ12RIT4ljYVwruxaad8w1m+znja3Q=="
 
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
-    def __init__(self, rate, chunk, audio_interface=None, audio_stream=None):
+    def __init__(self, rate, chunk, audio_interface):
         self._rate = rate
         self._chunk = chunk
         self._audio_interface = audio_interface
